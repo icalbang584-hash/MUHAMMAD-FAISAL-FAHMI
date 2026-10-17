@@ -1,379 +1,121 @@
 <?php
+// =====================================================================
+// TODO 1 - Memanggil file koneksi
+//   koneksi.php = nama file yang berisi $conn (lihat daftar file di folder ini)
+// =====================================================================
+require 'koneksi.php';
 
-$layanan = [
-    [
-        "nama" => "Paket Bore Up 63 free",
-        "kategori" => "Bore Up",
-        "harga" => 7000000,
-        "slot" => 3
-    ],
-    [
-        "nama" => "Paket Bore Up 70 free",
-        "kategori" => "Bore Up",
-        "harga" => 25000000,
-        "slot" => 2
-    ],
-    [
-        "nama" => "Porting & Polish",
-        "kategori" => "Performance",
-        "harga" => 850000,
-        "slot" => 5
-    ],
-    [
-        "nama" => "Mapping ECU (WAJIB ARACER)",
-        "kategori" => "ECU",
-        "harga" => 1200000,
-        "slot" => 4
-    ],
-    [
-        "nama" => "Dyno Test (PAKE DYNO MESIN JET TEMPUR RUSIA DI JAMIN BERAT)",
-        "kategori" => "Testing",
-        "harga" => 500000,
-        "slot" => 6
-    ],
-    [
-        "nama" => "Downsize FULL REQUEST",
-        "kategori" => "Motorcycle Look",
-        "harga" => 350000,
-        "slot" => 0
-    ]
-];
 
-$jumlahLayanan = count($layanan);
+$cari = '';
 
+// =====================================================================
+// TODO 2 - Membaca kata kunci pencarian dari URL
+//   cari dan cari = nama parameter GET (nilai atribut name
+//   pada <input> pencarian di bawah). Keduanya bernilai sama.
+// =====================================================================
+if (isset($_GET['cari'])) {
+    $cari = mysqli_real_escape_string($conn, $_GET['cari']);
+}
+
+
+// =====================================================================
+// TODO 3 - Query daftar mobil + pencarian
+//   showroom_mobil = nama tabel mobil (lihat CREATE TABLE di database.sql)
+//   nama_mobil = kolom nama mobil
+//   brand_mobil = kolom brand mobil
+//   DESC = urutan data terbaru di atas -> ASC atau DESC?
+// =====================================================================
+$hasil = mysqli_query($conn,
+    "SELECT * FROM showroom_mobil
+     WHERE nama_mobil LIKE '%$cari%' OR brand_mobil LIKE '%$cari%'
+     ORDER BY id DESC");
 ?>
-
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
-
     <meta charset="UTF-8">
+    <title>ShowRoom EAD</title>
 
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0">
-
-    <title>GHOMADE - Motor Performance Workshop</title>
-
+    <!-- ===============================================================
+         TODO 4 - Menghubungkan CSS
+           style.css = nama file .css di folder ini
+         =============================================================== -->
     <link rel="stylesheet" href="style.css">
 
 </head>
-
-<body>
-
-<!-- =========================
-     NAVBAR
-========================= -->
-
-<header>
-
-    <nav class="navbar">
-
-        <h2>GHOMADE</h2>
-
-        <div class="menu">
-
-            <a href="#">Home</a>
-
-            <a href="#layanan">Layanan</a>
-
-            <a href="#tentang">Tentang</a>
-
-            <a href="#kontak">Kontak</a>
-
-        </div>
-
-    </nav>
-
-</header>
-
-
-<!-- =========================
-     HERO
-========================= -->
-
-<section class="hero">
-
-    <div class="hero-content">
-
-        <p class="subtitle">
-            MOTOR PERFORMANCE WORKSHOP
-        </p>
-
-        <h1>
-            BORE UP MOTOR
-            <br>
-            TANPA CACICU
-        </h1>
-
-        <p>
-            GHOMADE adalah bengkel spesialis
-            bore-up dan performance motor untuk
-            meningkatkan performa mesin dengan
-            setting yang tepat.
-        </p>
-
-        <a href="#layanan" class="hero-button">
-            Lihat Paket
-        </a>
-
-    </div>
-
-</section>
-
-
-<!-- =========================
-     INFO LAYANAN
-========================= -->
-
-<section class="info">
-
-    <p class="section-label">
-        SERVICE MENU
-    </p>
-
-    <h2>
-        Pilih Paket Performa
-    </h2>
-
-    <p>
-        Tersedia
-        <strong>
-            <?php echo $jumlahLayanan; ?>
-        </strong>
-        layanan performance.
-    </p>
-
-</section>
-
-
-<!-- =========================
-     DAFTAR LAYANAN
-========================= -->
-
-<main id="layanan">
-
-    <div class="service-grid">
-
-        <?php foreach ($layanan as $service): ?>
-
-            <article class="service-card">
-
-                <span class="category">
-
-                    <?php echo $service["kategori"]; ?>
-
-                </span>
-
-
-                <h3>
-
-                    <?php echo $service["nama"]; ?>
-
-                </h3>
-
-
-                <!-- =========================
-                     DISKON
-                ========================= -->
-
-                <?php if ($service["harga"] >= 1000000): ?>
-
-                    <?php
-
-                    $diskon = 10;
-
-                    $hargaDiskon =
-                        $service["harga"]
-                        -
-                        ($service["harga"] * $diskon / 100);
-
-                    ?>
-
-
-                    <p class="harga-normal">
-
-                        Rp
-                        <?php
-
-                        echo number_format(
-                            $service["harga"],
-                            0,
-                            ',',
-                            '.'
-                        );
-
-                        ?>
-
-                    </p>
-
-
-                    <span class="badge">
-
-                        PROMO <?php echo $diskon; ?>%
-
-                    </span>
-
-
-                    <h4>
-
-                        Rp
-                        <?php
-
-                        echo number_format(
-                            $hargaDiskon,
-                            0,
-                            ',',
-                            '.'
-                        );
-
-                        ?>
-
-                    </h4>
-
-
-                <?php else: ?>
-
-
-                    <h4>
-
-                        Rp
-                        <?php
-
-                        echo number_format(
-                            $service["harga"],
-                            0,
-                            ',',
-                            '.'
-                        );
-
-                        ?>
-
-                    </h4>
-
-
-                <?php endif; ?>
-
-
-                <!-- =========================
-                     CEK SLOT
-                ========================= -->
-
-                <?php if ($service["slot"] > 0): ?>
-
-                    <p class="tersedia">
-
-                        ● Slot tersedia:
-                        <?php echo $service["slot"]; ?>
-
-                    </p>
-
-
-                    <button>
-
-                        Booking Sekarang
-
-                    </button>
-
-
-                <?php else: ?>
-
-
-                    <p class="habis">
-
-                        ● Slot penuh
-
-                    </p>
-
-
-                    <button disabled>
-
-                        Booking Ditutup
-
-                    </button>
-
-
-                <?php endif; ?>
-
-
-            </article>
-
-        <?php endforeach; ?>
-
-    </div>
-
-</main>
-
-
-<!-- =========================
-     TENTANG GHOMADE
-========================= -->
-
-<section id="tentang" class="about">
-
-    <p class="section-label">
-        ABOUT US
-    </p>
-
-    <h2>
-        GHOMADE
-    </h2>
-
-    <p>
-
-        GHOMADE merupakan bengkel spesialis
-        performance motor yang fokus pada
-        bore-up, porting polish, ECU tuning,
-        dan peningkatan performa mesin.
-
-    </p>
-
-</section>
-
-
-<!-- =========================
-     KONTAK
-========================= -->
-
-<section id="kontak" class="contact">
-
-    <h2>
-        Booking Service
-    </h2>
-
-    <p>
-
-        Konsultasikan kebutuhan bore-up
-        motor kamu dengan mekanik GHOMADE.
-
-    </p>
-
-    <button>
-
-        Hubungi Bengkel
-
-    </button>
-
-</section>
-
-
-<!-- =========================
-     FOOTER
-========================= -->
-
-<footer>
-
-    <p>
-        © 2026 GHOMADE
-    </p>
-
-    <p>
-        Performance • Precision • Power
-    </p>
-
-</footer>
-
-
-</body>
-
+<body><main>
+<p class="label">PRAKTIKUM PAW / MODUL 2</p>
+<h1>ShowRoom EAD</h1>
+<p>Kelola data mobil yang tersedia di showroom.</p>
+
+<!-- ===================================================================
+     TODO 5 - Pesan sukses
+       pesan = nama parameter yang dikirim setelah simpan/edit/hapus
+                  (lihat header('Location: index.php?...') di tambah.php)
+     =================================================================== -->
+<?php if (isset($_GET['pesan'])): ?>
+    <p class="pesan">Perubahan data berhasil disimpan.</p>
+<?php endif; ?>
+
+<!-- ===================================================================
+     TODO 6 - Tombol tambah
+       tambah.php = nama file halaman form tambah mobil
+     =================================================================== -->
+<p><a class="tombol" href="tambah.php">Tambah mobil</a></p>
+
+<!-- ===================================================================
+     TODO 7 - Method form pencarian
+       get = get atau post? (kata kunci harus terlihat di URL)
+     =================================================================== -->
+<form method="get" class="pencarian">
+    <label for="cari">Cari nama atau brand</label>
+    <input id="cari" name="cari" value="<?= $_GET['cari'] ?? '' ?>">
+    <button>Cari</button> <a href="index.php">Reset</a>
+</form>
+
+<!-- ===================================================================
+     TODO 8 - Jumlah hasil
+       mysqli_num_rows = fungsi mysqli untuk menghitung jumlah baris hasil query
+       0 = angka yang berarti "tidak ada data"
+     =================================================================== -->
+<p>Jumlah hasil: <?= mysqli_num_rows($hasil) ?></p>
+<?php if (mysqli_num_rows($hasil) == 0): ?>
+    <p>Data tidak ditemukan. Coba kata kunci lain.</p>
+<?php endif; ?>
+
+<div class="daftar">
+<!-- ===================================================================
+     TODO 9 - Perulangan data
+       mysqli_fetch_assoc = fungsi mysqli untuk mengambil satu baris sebagai
+                  array asosiatif (array dengan key nama kolom)
+     =================================================================== -->
+<?php while ($mobil = mysqli_fetch_assoc($hasil)): ?>
+    <article>
+        <!-- TODO 10 - isi key array dengan nama kolom di database.sql
+               kode_mobil = kolom kode    nama_mobil = kolom nama
+               brand_mobil = kolom brand   tipe_mobil = kolom tipe
+               warna_mobil = kolom warna -->
+        <p class="label"><?= $mobil['kode_mobil'] ?></p>
+        <h2><?= $mobil['nama_mobil'] ?></h2>
+        <p><?= $mobil['brand_mobil'] ?> &bull;
+           <?= $mobil['tipe_mobil'] ?></p>
+        <p>Warna: <?= $mobil['warna_mobil'] ?></p>
+
+        <!-- TODO 11 - format Rupiah (contoh: Rp 310.000.000)
+               0 = jumlah angka desimal (Rupiah tanpa sen)
+               , = pemisah desimal (koma)
+               . = pemisah ribuan  (titik) -->
+        <p>Rp <?= number_format($mobil['harga_mobil'], 0, ',', '.') ?></p>
+
+        <!-- TODO 12 - nama file tujuan tiap link
+               detail.php = halaman detail
+               edit.php = halaman edit
+               hapus.php = halaman hapus -->
+        <a href="detail.php?id=<?= $mobil['id'] ?>">Detail</a>
+        <a href="edit.php?id=<?= $mobil['id'] ?>">Edit</a>
+        <a href="hapus.php?id=<?= $mobil['id'] ?>">Hapus</a>
+    </article>
+<?php endwhile; ?>
+</div>
+</main></body>
 </html>
